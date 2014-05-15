@@ -43,13 +43,21 @@ module Fluent
       chunk.msgpack_each do |tag, time, record|
         summary = @summary_template % @summary_keys.map { |key| record[key] }
         args = { projectId: @project_id, summary: summary }
-        if @description_template
-          description = @description_template % @description_keys.map { |key| record[key] }
-          args[:description] = description
-        end
+        args[:description] = create_description(record)
         args[:component] = @component if @component
         @server.call('backlog.createIssue', args)
+        $log.info "backlog_plugin write [#{args[:summary]}]" 
       end
+    end
+
+    private
+
+    def create_description(record)
+      descriptions = @description_keys.map { |key| 
+        val = record[key].class == Array ? record[key].join("\n") : record[key]
+        "#{key}:\n#{val}" 
+      }
+      descriptions.join("\n\n")
     end
   end
 end
