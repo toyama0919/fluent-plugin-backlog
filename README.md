@@ -30,7 +30,7 @@ description_template|description(sprintf format)
 description_keys|description key
 component|category_id
 
-## Configuration Example(bulk insert)
+## Configuration Example
 
 ```
 <match backlog>
